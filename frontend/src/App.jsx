@@ -1,28 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css"
 import myimage from './imgAndVideo/background.jpg'
-
+import Axios from 'axios'
 
 function App() {
   const [todo,setTodo] = useState('');
-  const [newTodo, setnewTodo] = useState([]);
+  const [newTodo, setnewTodo] = useState();
   const [completedtask, setcompletedtask] = useState(0)
-  const add = ()=>{
 
-    const tods = {
-      id: newTodo.length === 0 ? 1 : newTodo[newTodo.length-1].id+1,
-      todo: todo, 
-      completed: false, 
+
+
+
+  const add = async()=>{
+    try{
+      const response = await Axios.post('http://localhost:3001/todos/post',{
+        todoname:todo, 
+        completed:completedtask,
+      })
+      Axios.get('http://localhost:3001/todos/get').then(res => setnewTodo(res.data))
+      // gettodos();
+      setTodo('')
     }
-    setnewTodo([...newTodo,tods]); 
+    catch(error){
+      console.log("error frontend: "+ error)
+    }
   }
   
   const completed = (id)=>{
-    setcompletedtask(completedtask+1)
-    const updatedtodo = newTodo.filter(item=>{
-      return item.id  !== id 
-    })
-    setnewTodo([...updatedtodo])
+    // setcompletedtask(completedtask+1)
+    // const updatedtodo = newTodo.filter(item=>{
+    //   return item.id  !== id 
+    // })
+    // setnewTodo([...updatedtodo])
   }  
 
   const keyhandler = (e)=>{
@@ -49,15 +58,16 @@ function App() {
         {/* body */}
 
         {
-          newTodo.map((items)=>{
-            return(
-              <div key={items.id} className="item-box">
-              <p>{items.id}</p>
-              <h3>{items.todo}</h3>
-              <button onClick={()=>{completed(items.id)}}>Completed</button>
-            </div>
-            )
-          })
+            newTodo?.map((items)=>{
+              return(
+                <div key={items.id} className="item-box">
+                <p>{items.id}</p>
+                <h3>{items.todoname}</h3>
+                <button onClick={()=>{completed(items.id)}}>Completed</button>
+              </div>
+              )
+            })
+          
         }
 
       </div>
