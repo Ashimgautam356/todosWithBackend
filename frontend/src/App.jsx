@@ -28,10 +28,10 @@ function App() {
   }
   
   const completed = async(id)=>{
-    setCompletedtask(1)
+    // setCompletedtask((prevCompleted) => (prevCompleted === 0 ? 1 : 0))
     try{ 
       const connection = Axios.put(`http://localhost:3001/todos/post/${id}`,({
-        completed: completedtask
+        completed: 1
       }))
       Axios.get('http://localhost:3001/todos/get').then(res => setnewTodo(res.data))
 
