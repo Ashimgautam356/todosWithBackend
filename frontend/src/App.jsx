@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import "./App.css"
 import myimage from './imgAndVideo/background.jpg'
-import Axios from 'axios'
+import {useDispatch} from 'react-redux'
+import {added,done,deleteHandler,deleteAll} from './features/todoSlice'
+
 
 function App() {
   const [todo,setTodo] = useState('');
@@ -11,56 +13,24 @@ function App() {
 
 
 
+  const dispatch = useDispatch()
 
-  const add = async()=>{
-    try{
-      const response = await Axios.post('http://localhost:3001/todos/post',{
-        todoname:todo, 
-        completed:completedtask,
-      })
-      Axios.get('http://localhost:3001/todos/get').then(res => setnewTodo(res.data))
-      // gettodos();
-      setTodo('')
-    }
-    catch(error){
-      console.log("error frontend: "+ error)
-    }
+  const add = ()=>{
+    dispatch(added({todoname:todo,completedtask: completedtask }));
+    setTodo('')
   }
   
-  const completed = async(id)=>{
-    // setCompletedtask((prevCompleted) => (prevCompleted === 0 ? 1 : 0))
-    try{ 
-      const connection = Axios.put(`http://localhost:3001/todos/post/${id}`,({
-        completed: 1
-      }))
-      Axios.get('http://localhost:3001/todos/get').then(res => setnewTodo(res.data))
-
-    }catch(err){
-      console.log(err)
-    }
+  const completed = (id)=>{
+      dispatch(done({completed:1, id:id}))
   }  
 
-  const deletehandler = async(id)=>{
-    try{
-
-      const connection = Axios.delete(`http://localhost:3001/todos/post/${id}`)
-      Axios.get('http://localhost:3001/todos/get').then(res => setnewTodo(res.data))
-
-  }catch(err){
-    console.log(err)
-  }
+  const deletehandler = (id)=>{
+    dispatch(deleteHandler({id:id}))
   }
 
 
   const deleteall = async () => {
-    try {
-      const connection = await Axios.delete('http://localhost:3001/todos/deleteall');
-      Axios.get('http://localhost:3001/todos/get').then(res => setnewTodo(res.data))
-
-      console.log('Response:', connection.status, connection.data);
-    } catch (err) {
-      console.log(err);
-    }
+    dispatch(deleteAll())
   };
   
   const keyhandler = (e)=>{
